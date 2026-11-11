@@ -24,6 +24,6 @@ text, tspan {white-space: pre;}
 <tspan x="15" y="270" class="cc">. </tspan><tspan class="key">Email</tspan>:<tspan class="cc"> .............................. </tspan><tspan class="value">nitsuga.bc@gmail.com</tspan>
 <tspan x="15" y="290" class="cc">. </tspan>
 <tspan x="15" y="310" class="hdr">- GitHub Stats</tspan> —————————————————————————————————————————————
-<tspan x="15" y="330" class="cc">. </tspan><tspan class="key">Contributed</tspan>:<tspan class="cc" id="contrib_data_dots"> ......... </tspan><tspan class="value" id="contrib_data">133</tspan> | <tspan class="key">Commits</tspan>:<tspan class="cc" id="commit_data_dots"> .............. </tspan><tspan class="value" id="commit_data">2,116</tspan>
+<tspan x="15" y="330" class="cc">. </tspan><tspan class="key">Contributed</tspan>:<tspan class="cc" id="contrib_data_dots"> .......... </tspan><tspan class="value" id="contrib_data">18</tspan> | <tspan class="key">Commits</tspan>:<tspan class="cc" id="commit_data_dots"> ................ </tspan><tspan class="value" id="commit_data">302</tspan>
 </text>
 </svg>
