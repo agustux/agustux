@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 
 import requests
 from lxml import etree
@@ -53,8 +54,18 @@ def update_svg(path, contrib, commits):
     tree.write(path, encoding='utf-8', xml_declaration=True)
 
 
+def update_readme(contrib, commits):
+    with open('README.md', encoding='utf-8') as f:
+        text = f.read()
+    text = re.sub(r'(dark_mode|light_mode)\.svg(\?v=[\w-]+)?',
+                  rf'\1.svg?v={contrib}-{commits}', text)
+    with open('README.md', 'w', encoding='utf-8') as f:
+        f.write(text)
+
+
 if __name__ == '__main__':
     contrib, commits = get_stats()
     for svg in SVGS:
         update_svg(svg, contrib, commits)
+    update_readme(contrib, commits)
     print(f'Contributed: {contrib:,} | Commits: {commits:,}')
