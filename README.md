@@ -1,6 +1,6 @@
 <a href="https://github.com/agustux/agustux">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/agustux/agustux/main/dark_mode.svg?v=18-313">
-    <img alt="agustux's GitHub Profile README" src="https://raw.githubusercontent.com/agustux/agustux/main/light_mode.svg?v=18-313">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/agustux/agustux/main/dark_mode.svg?v=19-316">
+    <img alt="agustux's GitHub Profile README" src="https://raw.githubusercontent.com/agustux/agustux/main/light_mode.svg?v=19-316">
   </picture>
 </a>
