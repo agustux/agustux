@@ -13,8 +13,8 @@ LEFT_DOTS = 12   # left half = 28 cols: 14 fixed + 2 spaces + dots + value
 RIGHT_DOTS = 19  # right half = 29 cols: 8 fixed + 2 spaces + dots + value
 
 
-def gql(query):
-    r = requests.post(API, json={'query': query, 'variables': {'login': USER_NAME}},
+def gql(query, **variables):
+    r = requests.post(API, json={'query': query, 'variables': {'login': USER_NAME, **variables}},
                       headers=HEADERS, timeout=30)
     r.raise_for_status()
     body = r.json()
@@ -23,11 +23,23 @@ def gql(query):
     return body['data']['user']
 
 
+def affiliated_repos():
+    names, cursor = set(), None
+    while True:
+        repos = gql('''query($login: String!, $cursor: String) { user(login: $login) {
+            repositories(first: 100, after: $cursor,
+                         ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]) {
+                nodes { nameWithOwner } pageInfo { hasNextPage endCursor } } } }''',
+                    cursor=cursor)['repositories']
+        names.update(n['nameWithOwner'] for n in repos['nodes'])
+        if not repos['pageInfo']['hasNextPage']:
+            return names
+        cursor = repos['pageInfo']['endCursor']
+
+
 def get_stats():
-    user = gql('''query($login: String!) { user(login: $login) {
-        createdAt
-        repositories(ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]) { totalCount }
-    } }''')
+    user = gql('query($login: String!) { user(login: $login) { createdAt } }')
+    by_repo = '(maxRepositories: 100) { repository { nameWithOwner } }'
     fmt = '%Y-%m-%dT%H:%M:%SZ'
     now = datetime.datetime.now(datetime.timezone.utc)
     a = datetime.datetime.fromisoformat(user['createdAt'])
@@ -35,11 +47,17 @@ def get_stats():
     while a < now:  # contributionsCollection spans max 1 year per alias
         b = min(a + datetime.timedelta(days=365), now)
         fields.append(f'y{len(fields)}: contributionsCollection(from: "{a.strftime(fmt)}", '
-                      f'to: "{b.strftime(fmt)}") {{ totalCommitContributions }}')
+                      f'to: "{b.strftime(fmt)}") {{ totalCommitContributions '
+                      f'commitContributionsByRepository{by_repo} '
+                      f'pullRequestContributionsByRepository{by_repo} }}')
         a = b
     years = gql('query($login: String!) { user(login: $login) { ' + ' '.join(fields) + ' } }')
     commits = sum(y['totalCommitContributions'] for y in years.values())
-    return user['repositories']['totalCount'], commits
+    repos = affiliated_repos() | {
+        c['repository']['nameWithOwner'] for y in years.values()
+        for key in ('commitContributionsByRepository', 'pullRequestContributionsByRepository')
+        for c in y[key]}
+    return len(repos), commits
 
 
 def update_svg(path, contrib, commits):
